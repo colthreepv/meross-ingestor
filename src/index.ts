@@ -13,7 +13,6 @@ const meross = new MerossCloud(options)
 
 const readTimeStamp = (time) => new Date(time * 1000)
 const readConsumptionX = (res: GetControlPowerConsumptionXResponse) => {
-  console.log('dump consumptionx', res)
   if (res.consumptionx == null) return
   if (Array.isArray(res.consumptionx) === false) return
   if (res.consumptionx.length !== 1) return
@@ -40,8 +39,9 @@ meross.on('deviceInitialized', (deviceId, deviceDef, device) => {
 
   function printConsumption (device: MerossCloudDevice) {
     // console.log('device', device)
-    device.getControlPowerConsumptionX((err, res) => console.log('Consumption', readConsumptionX(res)))
-    // device.getControlElectricity((err, res) => console.log('Electricity', readElectricity(res)))
+    // device.getControlPowerConsumptionX((err, res) => console.log('Consumption', readConsumptionX(res)))
+    device.getControlElectricity((err, res) => console.log(deviceDef.devName, 'electricity', readElectricity(res)))
+    console.log('--------------')
   }
 
   device.on('connected', () => {

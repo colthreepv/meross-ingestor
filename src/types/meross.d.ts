@@ -34,10 +34,17 @@ import { EventEmitter } from 'events'
   export interface GetControlElectricityResponse {
     electricity: {
       channel: number
+      /**
+       * current in decimilliAmp. Has to get divided by 10000 to get Amp(s)
+       */
       current: number
-      // voltage in V. Has to get divided by 10 to get Volt(s)
+      /**
+       * voltage in deciVolt. Has to get divided by 10 to get Volt(s)
+       */
       voltage: number
-      
+      /**
+       * power in milliWatt. Has to get divided by 1000 to get Watt(s)
+       */
       power: number
       config: {
         voltageRatio: number

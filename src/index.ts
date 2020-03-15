@@ -54,7 +54,7 @@ async function main () {
   console.log('meross connected')
 
   await logError(pollAndPublish(deviceList, measurement))
-  setTimeout(() => void logError(pollAndPublish(deviceList, measurement)), 10000)
+  setInterval(() => void logError(pollAndPublish(deviceList, measurement)), 10000)
 }
 
 try {

@@ -13,7 +13,7 @@ docker run --name meross-ingestor \
   colthreepv/meross-ingestor:v1.0.0
 ```
 
-[dockerhub]: http://hub.docker.com
+[dockerhub]: https://hub.docker.com/r/colthreepv/meross-ingestor
 
 # Complete list of Environment Variables
 

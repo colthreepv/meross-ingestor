@@ -1,6 +1,6 @@
 {
   "name": "meross-node",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "influx": "^5.5.1",
-    "meross-cloud": "https://github.com/colthreepv/meross-cloud/tarball/master"
+    "meross-cloud": "https://github.com/colthreepv/meross-cloud.git"
   },
   "devDependencies": {
     "@types/node": "^13.9.0",

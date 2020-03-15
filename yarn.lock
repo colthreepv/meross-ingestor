@@ -1412,9 +1412,9 @@ meow@^3.3.0:
     redent "^1.0.0"
     trim-newlines "^1.0.0"
 
-"meross-cloud@https://github.com/colthreepv/meross-cloud/tarball/master":
-  version "1.3.4"
-  resolved "https://github.com/colthreepv/meross-cloud/tarball/master#82b99c99bd3f876c5779997f87ea295ee022a12c"
+"meross-cloud@https://github.com/colthreepv/meross-cloud.git":
+  version "1.3.7"
+  resolved "https://github.com/colthreepv/meross-cloud.git#b2eacee91222de3623ee37f3a7611957d531f24f"
   dependencies:
     mqtt "^3.0.0"
     promise-timeout "^1.3.0"

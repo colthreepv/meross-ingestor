@@ -1,6 +1,8 @@
 FROM node:lts-alpine as build
 WORKDIR /usr/src/app
 
+RUN apk add -qU git
+
 COPY package.json yarn.lock ./
 RUN yarn install
 

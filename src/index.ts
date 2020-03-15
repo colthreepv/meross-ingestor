@@ -1,5 +1,7 @@
 import { InfluxDB, IPoint } from 'influx'
-import MerossCloud, { GetControlElectricityResponse, MerossCloudDevice } from 'meross-cloud'
+import MerossCloud, {
+  GetControlElectricityResponse, MerossCloudDevice, MerossMessage, TimeoutError,
+} from 'meross-cloud'
 
 import config from './config'
 
@@ -12,8 +14,10 @@ interface ElectricityReading {
   power: number
 }
 
-const readElectricity = (res: GetControlElectricityResponse): ElectricityReading => {
-  const { current, voltage, power } = res.electricity
+type ElectricityMessage = MerossMessage<GetControlElectricityResponse>
+
+const readElectricity = (msg: ElectricityMessage): ElectricityReading => {
+  const { current, voltage, power } = msg.payload
   return {
     current: current / 10000,
     voltage: voltage / 10,
@@ -21,31 +25,34 @@ const readElectricity = (res: GetControlElectricityResponse): ElectricityReading
   }
 }
 
-async function printConsumption (device: MerossCloudDevice) {
-  const electricity = await device.getControlElectricity()
-  console.log(device.dev.devName, 'electricity', readElectricity(electricity))
+// spread function calls over time
+function spreadFunctionCalls (calls: Function[], maxTime = 5000): void {
+  const delayEach = Math.floor(maxTime / calls.length)
+
+  calls.forEach((fnCall, idx) => setTimeout(() => fnCall(), idx * delayEach))
 }
 
-async function logError (promise: Promise<void>): Promise<void> {
+async function pollSingleAndPublish (device: MerossCloudDevice, influxMeasurement: string) {
+  let merossMeasurement: ElectricityMessage
   try {
-    await promise
+    merossMeasurement = await device.getControlElectricity()
   } catch (err) {
-    console.error('Error occurred', err)
+    if (err instanceof TimeoutError) {
+      return console.error(`Timeout on ${device.dev.devName} request`)
+    }
+    return console.error('Error occurred', err)
   }
-}
+  const electricity = readElectricity(merossMeasurement)
+  const point: IPoint = {
+    tags: { device: device.dev.devName },
+    fields: electricity,
+  }
 
-async function pollAndPublish (devices: MerossCloudDevice[], influxMeasurement: string) {
-  const merossMeasurements = await Promise.all(devices.map(async device => device.getControlElectricity()))
-  const measurements = devices
-    .map((device, idx) => ({ dev: device.dev, res: merossMeasurements[idx] }))
-    .filter(({ dev, res }) => res.electricity != null)
-    .map(({ dev, res }) => ({ dev, electricity: readElectricity(res) }))
-    .map(({ dev, electricity }): IPoint => ({
-      tags: { device: dev.devName },
-      fields: electricity,
-    }))
-
-  return influx.writeMeasurement(influxMeasurement, measurements)
+  try {
+    await influx.writeMeasurement(influxMeasurement, [point])
+  } catch (err) {
+    return console.error('Write on database failed', err)
+  }
 }
 
 async function main () {
@@ -53,8 +60,12 @@ async function main () {
   const deviceList = await meross.connect()
   console.log('meross connected')
 
-  await logError(pollAndPublish(deviceList, measurement))
-  setInterval(() => void logError(pollAndPublish(deviceList, measurement)), 10000)
+  // prepares polling functions and executes them spreading out in time
+  spreadFunctionCalls(deviceList.map(device => () => void pollSingleAndPublish(device, measurement)))
+
+  setInterval(() =>
+    spreadFunctionCalls(deviceList.map(device => () => void pollSingleAndPublish(device, measurement)))
+  , 10000)
 }
 
 try {

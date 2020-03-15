@@ -10,7 +10,7 @@ docker run --name meross-ingestor \
   -e INFLUX_DATABASE=database \
   -e MEROSS_EMAIL=user@name.com \
   -e MEROSS_PASSWORD=yourpassword \
-  colthreepv/meross-ingestor:v1.0.0
+  colthreepv/meross-ingestor:v1.0.1
 ```
 
 [dockerhub]: https://hub.docker.com/r/colthreepv/meross-ingestor

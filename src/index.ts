@@ -1,27 +1,18 @@
-import MerossCloud, {
-  GetControlElectricityResponse, GetControlPowerConsumptionXResponse, MerossCloudDevice,
-} from 'meross-cloud'
+import { InfluxDB, IPoint } from 'influx'
+import MerossCloud, { GetControlElectricityResponse, MerossCloudDevice } from 'meross-cloud'
 
-const options = {
-  email: process.env.MEROSS_EMAIL!,
-  password: process.env.MEROSS_PASSWORD!,
+import config from './config'
+
+const influx = new InfluxDB(config.influxConfig)
+const meross = new MerossCloud(config.merossConfig)
+
+interface ElectricityReading {
+  current: number
+  voltage: number
+  power: number
 }
 
-const readTimeStamp = (time) => new Date(time * 1000)
-const readConsumptionX = (res: GetControlPowerConsumptionXResponse) => {
-  if (res.consumptionx == null) return
-  if (Array.isArray(res.consumptionx) === false) return
-  if (res.consumptionx.length !== 1) return
-  const reading = res.consumptionx[0]
-
-  return {
-    date: readTimeStamp(reading.time),
-    value: reading.value,
-  }
-}
-
-const readElectricity = (res: GetControlElectricityResponse) => {
-  if (res.electricity == null) return
+const readElectricity = (res: GetControlElectricityResponse): ElectricityReading => {
   const { current, voltage, power } = res.electricity
   return {
     current: current / 10000,
@@ -31,36 +22,49 @@ const readElectricity = (res: GetControlElectricityResponse) => {
 }
 
 async function printConsumption (device: MerossCloudDevice) {
-  const [consumption, electricity] = await Promise.all([
-    device.getControlPowerConsumptionX(),
-    device.getControlElectricity(),
-  ])
+  const electricity = await device.getControlElectricity()
   console.log(device.dev.devName, 'electricity', readElectricity(electricity))
-  console.log(device.dev.devName, 'consumption', readConsumptionX(consumption))
+}
+
+async function logError (promise: Promise<void>): Promise<void> {
+  try {
+    await promise
+  } catch (err) {
+    console.error('Error occurred', err)
+  }
+}
+
+async function pollAndPublish (devices: MerossCloudDevice[], influxMeasurement: string) {
+  const merossMeasurements = await Promise.all(devices.map(async device => device.getControlElectricity()))
+  const measurements = devices
+    .map((device, idx) => ({ dev: device.dev, res: merossMeasurements[idx] }))
+    .filter(({ dev, res }) => res.electricity != null)
+    .map(({ dev, res }) => ({ dev, electricity: readElectricity(res) }))
+    .map(({ dev, electricity }): IPoint => ({
+      tags: { device: dev.devName },
+      fields: electricity,
+    }))
+
+  return influx.writeMeasurement(influxMeasurement, measurements)
 }
 
 async function main () {
-  const meross = new MerossCloud(options)
+  const { measurement } = config.influxOptions
   const deviceList = await meross.connect()
   console.log('meross connected')
-  // const firstDevice = deviceList[0]
-  // printConsumption(firstDevice)
 
-  // firstDevice.on('connected', () => printConsumption(firstDevice))
-  // setInterval(() => printConsumption(firstDevice), 10 * 1000)
-
-  deviceList.forEach(printConsumption)
-  setInterval(() => deviceList.forEach(printConsumption), 10 * 1000)
+  await logError(pollAndPublish(deviceList, measurement))
+  setTimeout(() => void logError(pollAndPublish(deviceList, measurement)), 10000)
 }
 
 try {
-  main()
+  void main()
 } catch (err) {
   console.error('Error happened', err)
   process.exit(1)
 }
 
-process.on('unhandledRejection', function(reason, p){
-  console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+process.on('unhandledRejection', function (reason, p) {
+  console.log('Possibly Unhandled Rejection at: Promise ', p, ' reason: ', reason)
   // application specific logging here
-});
+})

@@ -1,6 +1,6 @@
 import MerossCloud from 'meross-cloud'
 
-import { cleanDevices } from './blacklist'
+import { adjustTimeoutsThreshold, cleanDevices } from './blacklist'
 import config from './config'
 import { pollSingleAndPublish, spreadFunctionCalls } from './meross'
 
@@ -12,6 +12,7 @@ async function main () {
   const { measurement } = config.influxOptions
   let intervalCounter = 0
   let deviceList = await meross.connect()
+  adjustTimeoutsThreshold(deviceList.length)
   console.log(`meross connected, found ${deviceList.length} devices`)
 
   // prepares polling functions and executes them spreading out in time
@@ -26,6 +27,7 @@ async function main () {
     } else {
       deviceList = cleanDevices(deviceList)
     }
+    adjustTimeoutsThreshold(deviceList.length)
     spreadFunctionCalls(deviceList.map(device => () => void pollSingleAndPublish(device, measurement)))
   }
 

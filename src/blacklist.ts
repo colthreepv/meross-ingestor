@@ -10,7 +10,8 @@ const MAX_TIMEOUTS = 10
 const blacklist: Map<string, number> = new Map()
 
 const overallTimeouts: Map<string, TimeoutRecap> = new Map()
-const TIMEOUT_THRESHOLD = 5
+let TIMEOUT_THRESHOLD = 5
+let timeoutsSinceAdjust = 0
 let timeoutsCounter = 0
 
 export function cleanDevices (devices: MerossCloudDevice[]): MerossCloudDevice[] {
@@ -42,11 +43,12 @@ export function deviceDidTimeout (device: MerossCloudDevice) {
 
   // Prints timeout information every TIMEOUT_THRESHOLD times
   timeoutsCounter++
+  timeoutsSinceAdjust++
   if (timeoutsCounter > TIMEOUT_THRESHOLD) {
     timeoutsCounter = 0
     const table = new AsciiTable('Overall TIMEOUT events')
     table.setHeading('Name', 'TIMEOUT(s)')
-    for (const [_, timeoutRecap] of overallTimeouts.entries()) {
+    for (const [, timeoutRecap] of overallTimeouts.entries()) {
       table.addRow(timeoutRecap.name, timeoutRecap.amount)
     }
     console.log(table.toString())
@@ -56,4 +58,16 @@ export function deviceDidTimeout (device: MerossCloudDevice) {
 export function deviceDidRespond (device: MerossCloudDevice) {
   const { uuid } = device.dev
   blacklist.delete(uuid)
+}
+
+function adjustThreshold (deviceAmount: number, errorsAmount: number) {
+  // timeouts: 0, devices: 10 => 15
+  // timeouts: 15, devices: 10 => Math.floor(devices * 1.5) + Math.floor(devices * (timeouts / 10)) ::: 30
+  return Math.floor(deviceAmount * 1.5) + Math.floor(deviceAmount * (errorsAmount / 10))
+}
+
+export function adjustTimeoutsThreshold (deviceAmount: number): void {
+  const newThreshold = adjustThreshold(deviceAmount, timeoutsSinceAdjust)
+  TIMEOUT_THRESHOLD = newThreshold
+  timeoutsSinceAdjust = 0
 }

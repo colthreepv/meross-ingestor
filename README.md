@@ -36,3 +36,7 @@ Variables marked with `⚠️` are required
 - Devices gets blacklisted after 10 timeouts
 - Device list gets updated ever 1 hour
 - Print TIMEOUT information every few timeouts (5)
+
+## [1.2.1] - 2020-06-14
+### Changed
+- Better TIMEOUT threshold calculation, based on previous occurrences

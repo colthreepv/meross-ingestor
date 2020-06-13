@@ -1,6 +1,6 @@
 {
   "name": "meross-node",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,20 +11,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ascii-table": "^0.0.9",
     "influx": "^5.5.1",
-    "meross-cloud": "https://github.com/colthreepv/meross-cloud.git"
+    "meross-cloud": "github:/colthreepv/meross-cloud"
   },
   "devDependencies": {
-    "@types/node": "^13.9.0",
-    "@typescript-eslint/eslint-plugin": "2",
+    "@types/node": "^14.0.13",
+    "@typescript-eslint/eslint-plugin": "^3.2.0",
     "dotenv": "^8.2.0",
-    "eslint": "6",
-    "eslint-config-standard-with-typescript": "^14.0.0",
+    "eslint": "^7.2.0",
+    "eslint-config-standard-with-typescript": "^18.0.2",
     "eslint-plugin-import": "2",
     "eslint-plugin-node": "11",
     "eslint-plugin-promise": "4",
     "eslint-plugin-standard": "4",
-    "ts-node-dev": "^1.0.0-pre.44",
+    "ts-node-dev": "^1.0.0-pre.45",
     "typescript": "^3.8.3"
   }
 }

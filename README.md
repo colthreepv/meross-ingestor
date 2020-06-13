@@ -28,3 +28,11 @@ docker run --name meross-ingestor \
 - ⚠️MEROSS_PASSWORD
 
 Variables marked with `⚠️` are required
+
+
+# Changelog
+## [1.2.0] - 2020-06-13
+### Added
+- Devices gets blacklisted after 10 timeouts
+- Device list gets updated ever 1 hour
+- Print TIMEOUT information every few timeouts (5)

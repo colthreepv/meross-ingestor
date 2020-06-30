@@ -71,3 +71,7 @@ export function adjustTimeoutsThreshold (deviceAmount: number): void {
   TIMEOUT_THRESHOLD = newThreshold
   timeoutsSinceAdjust = 0
 }
+
+export function resetBlackList (): void {
+  blacklist.clear()
+}

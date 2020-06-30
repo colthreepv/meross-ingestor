@@ -1,6 +1,6 @@
 import MerossCloud from 'meross-cloud'
 
-import { adjustTimeoutsThreshold, cleanDevices } from './blacklist'
+import { adjustTimeoutsThreshold, cleanDevices, resetBlackList } from './blacklist'
 import config from './config'
 import { pollSingleAndPublish, spreadFunctionCalls } from './meross'
 
@@ -24,6 +24,7 @@ async function main () {
       deviceList = await meross.getDeviceList()
       console.log(`updated devices list, found ${deviceList.length} devices`)
       intervalCounter = 0
+      resetBlackList()
     } else {
       deviceList = cleanDevices(deviceList)
     }

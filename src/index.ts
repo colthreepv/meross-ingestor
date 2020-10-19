@@ -21,6 +21,7 @@ async function main () {
   const onInterval = async () => {
     intervalCounter++
     if (intervalCounter > RELOAD_DEVICES_AFTER) {
+      meross.disconnectAll(true)
       deviceList = await meross.getDeviceList()
       console.log(`updated devices list, found ${deviceList.length} devices`)
       intervalCounter = 0

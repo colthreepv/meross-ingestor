@@ -1,7 +1,5 @@
 import { InfluxDB, IPoint } from 'influx'
-import {
-  GetControlElectricityResponse, MerossCloudDevice, MerossMessage, TimeoutError,
-} from 'meross-cloud'
+import { ElectricityResponse, MerossCloudDevice, MerossMessage, TimeoutError } from 'meross-cloud'
 
 import { deviceDidRespond, deviceDidTimeout } from './blacklist'
 import config from './config'
@@ -14,7 +12,7 @@ interface ElectricityReading {
   power: number
 }
 
-type ElectricityMessage = MerossMessage<GetControlElectricityResponse>
+type ElectricityMessage = MerossMessage<ElectricityResponse>
 
 const readElectricity = (msg: ElectricityMessage): ElectricityReading => {
   const { current, voltage, power } = msg.payload

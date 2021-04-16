@@ -1,4 +1,4 @@
-import MerossCloud from 'meross-cloud'
+import { MerossCloud, MerossCloudDevice } from 'meross-cloud'
 
 import { adjustTimeoutsThreshold, cleanDevices, resetBlackList } from './blacklist'
 import config from './config'
@@ -8,6 +8,10 @@ const meross = new MerossCloud(config.merossConfig)
 
 const RELOAD_DEVICES_AFTER = 360 // every 1 hour
 
+// prepares polling functions and executes them spreading out in time
+const operation = (devices: MerossCloudDevice[], measurement: string) =>
+  spreadFunctionCalls(devices.map(device => () => void pollSingleAndPublish(device, measurement)))
+
 async function main () {
   const { measurement } = config.influxOptions
   let intervalCounter = 0
@@ -15,8 +19,7 @@ async function main () {
   adjustTimeoutsThreshold(deviceList.length)
   console.log(`meross connected, found ${deviceList.length} devices`)
 
-  // prepares polling functions and executes them spreading out in time
-  spreadFunctionCalls(deviceList.map(device => () => void pollSingleAndPublish(device, measurement)))
+  operation(deviceList, measurement)
 
   const onInterval = async () => {
     intervalCounter++
@@ -30,7 +33,7 @@ async function main () {
       deviceList = cleanDevices(deviceList)
     }
     adjustTimeoutsThreshold(deviceList.length)
-    spreadFunctionCalls(deviceList.map(device => () => void pollSingleAndPublish(device, measurement)))
+    operation(deviceList, measurement)
   }
 
   setInterval(() => void onInterval(), 10000)

@@ -1,5 +1,7 @@
 import { InfluxDB, IPoint } from 'influx'
-import { ElectricityResponse, MerossCloudDevice, MerossMessage, TimeoutError } from 'meross-cloud'
+import {
+  ElectricityResponse, MerossCloudDevice, MerossMessage, TimeoutError,
+} from 'meross-cloud-ts'
 
 import { deviceDidRespond, deviceDidTimeout } from './blacklist'
 import config from './config'

@@ -1,4 +1,4 @@
-import { MerossCloud, MerossCloudDevice } from 'meross-cloud'
+import { MerossCloud, MerossCloudDevice } from 'meross-cloud-ts'
 
 import { adjustTimeoutsThreshold, cleanDevices, resetBlackList } from './blacklist'
 import config from './config'

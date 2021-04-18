@@ -1514,9 +1514,10 @@ merge2@^1.3.0:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-"meross-cloud@github:/colthreepv/meross-cloud":
-  version "2.0.0"
-  resolved "https://codeload.github.com/colthreepv/meross-cloud/tar.gz/0900dc0273b870b3ee6b03494566f79cf2856e1a"
+meross-cloud-ts@^2.0.0-rc.3:
+  version "2.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/meross-cloud-ts/-/meross-cloud-ts-2.0.0-rc.3.tgz#7e2e655c2e42a62f07f42f5bf385ad1acd3e2527"
+  integrity sha512-eMtIOLavH9cWGygqx7GyI/b6/SqY4Hqqsj1TmE3cw65e4nFptQxb8w2i+M64zdYZNGPLf2AOtK41DuG/XeNlhA==
   dependencies:
     got "^11.8.2"
     mqtt "^4.1.0"

@@ -1,13 +1,13 @@
-import { config } from 'dotenv'
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { ISingleHostConfig } from 'influx'
-import { CloudOptions } from 'meross-cloud'
+import { CloudOptions } from 'meross-cloud-ts'
 
 export type APP_ENV = 'development' | 'production' | 'test'
 export type DB_CHOICE = 'influx'
 
 const ENV = process.env.NODE_ENV === 'production' ? 'production' : (process.env.NODE_ENV ?? 'development') as APP_ENV
 // use of file .env.environment file **only** outside production
-if (ENV !== 'production') config({ path: `.env.${ENV}` })
+if (ENV !== 'production') require('dotenv').config({ path: `.env.${ENV}` })
 
 export function isEmpty (value: any): boolean {
   if (value === undefined) return true

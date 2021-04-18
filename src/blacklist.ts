@@ -1,5 +1,5 @@
 import AsciiTable from 'ascii-table'
-import { MerossCloudDevice } from 'meross-cloud'
+import { MerossCloudDevice } from 'meross-cloud-ts'
 
 interface TimeoutRecap {
   name: string

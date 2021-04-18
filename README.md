@@ -31,12 +31,18 @@ Variables marked with `⚠️` are required
 
 
 # Changelog
+## [1.3.0] - 2021-04-18
+### Changed
+- Using [meross-cloud-ts](meross-cloud-ts) now as underlying library
+
+[meross-cloud-ts]: https://www.npmjs.com/package/meross-cloud-ts
+
+## [1.2.1] - 2020-06-14
+### Changed
+- Better TIMEOUT threshold calculation, based on previous occurrences
+
 ## [1.2.0] - 2020-06-13
 ### Added
 - Devices gets blacklisted after 10 timeouts
 - Device list gets updated ever 1 hour
 - Print TIMEOUT information every few timeouts (5)
-
-## [1.2.1] - 2020-06-14
-### Changed
-- Better TIMEOUT threshold calculation, based on previous occurrences
